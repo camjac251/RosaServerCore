@@ -1,37 +1,39 @@
 ---@type Plugin
 local plugin = ...
-plugin.name = 'Boards'
-plugin.author = 'jdb'
+plugin.name = "Boards"
+plugin.author = "jdb"
 plugin.description = 'Adds hooks for posting "boards" to a web server on reset.'
 
 plugin.defaultConfig = {
-	host = 'https://oxs.international',
-	path = '/api/v1/boards'
+	host = "https://oxs.international",
+	path = "/api/v1/boards",
 }
 
-local json = require 'main.json'
+local json = require("main.json")
 
-local function onResponse (res)
-	if not plugin.isEnabled then return end
+local function onResponse(res)
+	if not plugin.isEnabled then
+		return
+	end
 
 	if not res then
-		plugin:warn('Request failed')
+		plugin:warn("Request failed")
 		return
 	end
 
 	if res.status < 200 or res.status > 299 then
-		plugin:warn('Error ' .. res.status .. ': ' .. res.body)
+		plugin:warn("Error " .. res.status .. ": " .. res.body)
 		return
 	end
 
-	plugin:print('Posted')
+	plugin:print("Posted")
 end
 
 ---Build and post boards to a web server.
-function postBoards ()
+function postBoards()
 	local boards = {}
 
-	if hook.run('BuildBoards', boards) then
+	if hook.run("BuildBoards", boards) then
 		return
 	end
 
@@ -42,14 +44,14 @@ function postBoards ()
 	else
 		local body = {
 			port = server.port,
-			boards = boards
+			boards = boards,
 		}
 
 		postString = json.encode(body)
 	end
 
 	local cfg = plugin.config
-	http.post(cfg.host, cfg.path, {}, postString, 'application/json', onResponse)
+	http.post(cfg.host, cfg.path, {}, postString, "application/json", onResponse)
 end
 
-plugin:addHook('PostResetGame', postBoards)
+plugin:addHook("PostResetGame", postBoards)

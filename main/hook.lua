@@ -19,7 +19,7 @@ hook.override = OVERRIDE
 hook.plugins = {}
 
 ---Regenerate the cache of enabled hooks.
-function hook.resetCache ()
+function hook.resetCache()
 	hook.clear()
 	_cache = {}
 
@@ -63,7 +63,7 @@ function hook.resetCache ()
 			_cache[event] = {}
 		end
 
-		table.sort(infos, function (a, b)
+		table.sort(infos, function(a, b)
 			return a.priority < b.priority
 		end)
 
@@ -77,9 +77,9 @@ end
 ---@param eventName string The name of the event to be hooked.
 ---@param name string The unique name of the new hook.
 ---@param func function The function to be called when the hook runs.
-function hook.add (eventName, name, func)
-	assert(type(eventName) == 'string')
-	assert(type(func) == 'function')
+function hook.add(eventName, name, func)
+	assert(type(eventName) == "string")
+	assert(type(func) == "function")
 
 	if _hooks[eventName] == nil then
 		_hooks[eventName] = {}
@@ -92,9 +92,9 @@ end
 ---Add a generic hook to be run once.
 ---@param eventName string The name of the event to be hooked.
 ---@param func function The function to be called once when the hook runs.
-function hook.once (eventName, func)
-	assert(type(eventName) == 'string')
-	assert(type(func) == 'function')
+function hook.once(eventName, func)
+	assert(type(eventName) == "string")
+	assert(type(func) == "function")
 
 	if _tempHooks[eventName] == nil then
 		_tempHooks[eventName] = {}
@@ -107,9 +107,11 @@ end
 ---Remove a generic named hook.
 ---@param eventName string The name of the event to be hooked.
 ---@param name string The unique name of the hook to remove.
-function hook.remove (eventName, name)
-	assert(type(eventName) == 'string')
-	if _hooks[eventName] == nil then return end
+function hook.remove(eventName, name)
+	assert(type(eventName) == "string")
+	if _hooks[eventName] == nil then
+		return
+	end
 
 	_hooks[eventName][name] = nil
 	hook.resetCache()
@@ -119,7 +121,7 @@ end
 ---@param eventName string The name of the event.
 ---@vararg any The arguments to pass to the hook functions.
 ---@return boolean override Whether default behaviour should be overridden, if applicable.
-function hook.run (eventName, ...)
+function hook.run(eventName, ...)
 	local hadTemp = false
 
 	if _tempHooks[eventName] ~= nil then
@@ -163,10 +165,10 @@ end
 ---@param command table The command table.
 ---@param plyOrArgs Player|table The calling player, or a table of arguments if it is a console command.
 ---@return boolean canCall Whether the command can be called given the conditions.
-function hook.canCallCommand (name, command, plyOrArgs)
-	if not name:startsWith('/') then
+function hook.canCallCommand(name, command, plyOrArgs)
+	if not name:startsWith("/") then
 		-- This is a console-only command
-		return type(plyOrArgs) == 'table'
+		return type(plyOrArgs) == "table"
 	else
 		if command.canCall then
 			return not not command.canCall(plyOrArgs)
@@ -176,9 +178,9 @@ function hook.canCallCommand (name, command, plyOrArgs)
 	end
 end
 
-local function callCommand (name, command, plyOrArgs, ...)
+local function callCommand(name, command, plyOrArgs, ...)
 	if not hook.canCallCommand(name, command, plyOrArgs) then
-		error('Access denied')
+		error("Access denied")
 	end
 
 	command.call(plyOrArgs, ...)
@@ -186,7 +188,7 @@ end
 
 ---Get all enabled commands.
 ---@return table commands The name of each command mapped to their command table.
-function hook.getCommands ()
+function hook.getCommands()
 	local commands = {}
 
 	for _, plugin in pairs(hook.plugins) do
@@ -203,7 +205,7 @@ end
 ---Find a command by its name or alias.
 ---@param name string The name or alias of the command to find.
 ---@return table? command The found command, if any.
-function hook.findCommand (name)
+function hook.findCommand(name)
 	for _, plugin in pairs(hook.plugins) do
 		if plugin.isEnabled then
 			local command = plugin.commands[name]
@@ -222,12 +224,12 @@ function hook.findCommand (name)
 	return nil
 end
 
-local function commandNameStartsWith (name, beginning)
+local function commandNameStartsWith(name, beginning)
 	if name:startsWith(beginning) then
 		return true
 	end
 
-	if name:startsWith('/') then
+	if name:startsWith("/") then
 		return name:sub(2):startsWith(beginning)
 	end
 
@@ -238,7 +240,7 @@ end
 ---@param beginning string The name to auto complete.
 ---@return string? name The full name of the found command, if any.
 ---@return table? command The found command, if any.
-function hook.autoCompleteCommand (beginning)
+function hook.autoCompleteCommand(beginning)
 	--- Check raw names first
 	for _, plugin in pairs(hook.plugins) do
 		if plugin.isEnabled then
@@ -273,7 +275,7 @@ end
 ---@param nameSpace string? The plugin name space to limit the search to.
 ---@return string? name The full file name of the found plugin, if any.
 ---@return Plugin? plugin The found plugin, if any.
-function hook.autoCompletePlugin (beginning, nameSpace)
+function hook.autoCompletePlugin(beginning, nameSpace)
 	beginning = beginning:lower()
 
 	for _, plugin in pairs(hook.plugins) do
@@ -289,7 +291,7 @@ end
 ---@param name string The name of the desired plugin.
 ---@param nameSpace string? The plugin name space to limit the search to.
 ---@return Plugin? plugin The found plugin, if any.
-function hook.getPluginByName (name, nameSpace)
+function hook.getPluginByName(name, nameSpace)
 	name = name:lower()
 
 	for _, plugin in pairs(hook.plugins) do
@@ -306,7 +308,7 @@ end
 ---@param command table? The command to run, usually the result of hook.findCommand.
 ---@vararg any The rest of the parameters the command expects.
 ---@see hook.findCommand
-function hook.runCommand (name, command, ...)
+function hook.runCommand(name, command, ...)
 	if command ~= nil then
 		callCommand(name, command, ...)
 		return true

@@ -1,9 +1,9 @@
 ---@type Plugin
 local mode = ...
-mode.name = 'Round'
-mode.author = 'Cryptic Sea'
+mode.name = "Round"
+mode.author = "Cryptic Sea"
 
-mode:addEnableHandler(function (isReload)
+mode:addEnableHandler(function(isReload)
 	server.type = TYPE_ROUND
 	if not isReload then
 		server:reset()

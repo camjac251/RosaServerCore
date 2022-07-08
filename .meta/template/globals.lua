@@ -83,7 +83,7 @@ FILE_WATCH_UNMOUNT = 0
 ---The hook library which hooked events will call upon.
 ---The hook.run function must be defined to use hooks.
 hook = {
-	persistentMode = ''
+	persistentMode = "",
 }
 
 ---Enable a hook for use in Lua.
@@ -129,11 +129,7 @@ function Vector(x, y, z) end
 ---@param y3 number
 ---@param z3 number
 ---@return RotMatrix rotMatrix The created rotation matrix.
-function RotMatrix(
-	x1, y1, z1,
-	x2, y2, z2,
-	x3, y3, z3
-) end
+function RotMatrix(x1, y1, z1, x2, y2, z2, x3, y3, z3) end
 
 ---Library for sending HTTP(S) requests.
 http = {}

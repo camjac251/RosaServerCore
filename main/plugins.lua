@@ -1,4 +1,4 @@
-local json = require 'main.json'
+local json = require("main.json")
 
 local PLUGIN_WATCHER = FileWatcher.new()
 
@@ -7,26 +7,26 @@ local pollCounter = 0
 
 local doPrintsWithoutTime
 
-local function getTimePrefix ()
+local function getTimePrefix()
 	if doPrintsWithoutTime then
-		return ''
+		return ""
 	end
 
-	return '\27[30;1m[' .. os.date('%X') .. ']\27[0m '
+	return "\27[30;1m[" .. os.date("%X") .. "]\27[0m "
 end
 
-local function printScoped (...)
-	local prefix = '\27[34m[Plugins]\27[0m '
-	print(getTimePrefix() .. prefix .. concatVarArgs('\t', ...))
+local function printScoped(...)
+	local prefix = "\27[34m[Plugins]\27[0m "
+	print(getTimePrefix() .. prefix .. concatVarArgs("\t", ...))
 end
 
-local disabledPluginsFile = 'disabledPlugins.json'
+local disabledPluginsFile = "disabledPlugins.json"
 
 local disabledPluginsMap = {}
 do
-	local f = io.open(disabledPluginsFile, 'r')
+	local f = io.open(disabledPluginsFile, "r")
 	if f then
-		local array = json.decode(f:read('*all'))
+		local array = json.decode(f:read("*all"))
 		for _, name in ipairs(array) do
 			disabledPluginsMap[name] = true
 		end
@@ -35,8 +35,8 @@ do
 	end
 end
 
-local function saveDisabledPlugins ()
-	local f = io.open(disabledPluginsFile, 'w')
+local function saveDisabledPlugins()
+	local f = io.open(disabledPluginsFile, "w")
 	if f then
 		local array = {}
 		for name, _ in pairs(disabledPluginsMap) do
@@ -46,12 +46,12 @@ local function saveDisabledPlugins ()
 		if #array == 0 then
 			f:close()
 			if os.remove(disabledPluginsFile) then
-				printScoped('Removed ' .. disabledPluginsFile)
+				printScoped("Removed " .. disabledPluginsFile)
 			end
 		else
 			f:write(json.encode(array))
 			f:close()
-			printScoped('Exported to ' .. disabledPluginsFile)
+			printScoped("Exported to " .. disabledPluginsFile)
 		end
 	end
 end
@@ -83,7 +83,7 @@ plugin.__index = plugin
 
 ---Enable safely.
 ---@param shouldSave boolean? Whether to persist the plugin being enabled and save disabled plugins to disk.
-function plugin:enable (shouldSave)
+function plugin:enable(shouldSave)
 	if not self.isEnabled then
 		self.isEnabled = true
 		hook.resetCache()
@@ -98,7 +98,7 @@ end
 
 ---Disable safely.
 ---@param shouldSave boolean? Whether to persist the plugin being disabled and save disabled plugins to disk.
-function plugin:disable (shouldSave)
+function plugin:disable(shouldSave)
 	if self.isEnabled then
 		self.isEnabled = false
 		self:callDisableHandlers(false)
@@ -115,7 +115,7 @@ local acceptableColors = {}
 do
 	local i = 0
 	for color = 17, 230 do
-		if (color % 6 < 4) then
+		if color % 6 < 4 then
 			i = i + 1
 			acceptableColors[i] = color
 		end
@@ -123,7 +123,7 @@ do
 end
 
 ---@param name string
-local function nameToColor (name)
+local function nameToColor(name)
 	local sum = 0
 
 	for i = 1, #name do
@@ -135,29 +135,29 @@ end
 
 ---Print a message.
 ---@vararg any The values to print.
-function plugin:print (...)
+function plugin:print(...)
 	if not self._printColor then
 		self._printColor = nameToColor(self.name)
 	end
 
-	local color = self.nameSpace == 'modes' and 248 or self._printColor
-	local prefix = '\27[38;5;' .. color .. 'm[' .. self.name .. ']\27[0m '
-	print(getTimePrefix() .. prefix .. concatVarArgs('\t', ...))
+	local color = self.nameSpace == "modes" and 248 or self._printColor
+	local prefix = "\27[38;5;" .. color .. "m[" .. self.name .. "]\27[0m "
+	print(getTimePrefix() .. prefix .. concatVarArgs("\t", ...))
 end
 
 ---Print a warning message.
 ---@vararg any The values to print.
-function plugin:warn (...)
-	local prefix = '\27[33m[' .. self.name .. ']\27[0m '
-	print(getTimePrefix() .. prefix .. concatVarArgs('\t', ...))
+function plugin:warn(...)
+	local prefix = "\27[33m[" .. self.name .. "]\27[0m "
+	print(getTimePrefix() .. prefix .. concatVarArgs("\t", ...))
 end
 
 ---Include another file.
 ---@param modName string The name of the module to include.
 ---@return any value The value returned by the file execution.
-function plugin:require (modName)
+function plugin:require(modName)
 	if not self.requireCache[modName] then
-		local fileName = self.nameSpace .. '/' .. self.fileName .. '/' .. modName .. '.lua'
+		local fileName = self.nameSpace .. "/" .. self.fileName .. "/" .. modName .. ".lua"
 		local loadedFile = assert(loadfile(fileName))
 		self.requireCache[modName] = loadedFile(self)
 	end
@@ -172,7 +172,7 @@ end
 ---@param eventName string The name of the event to be hooked.
 ---@param func function The function to be called when the hook runs.
 ---@param options? PluginHookOptions The options for the hook.
-function plugin:addHook (eventName, func, options)
+function plugin:addHook(eventName, func, options)
 	if not self.polyHooks[eventName] then
 		self.polyHooks[eventName] = {}
 	end
@@ -181,17 +181,17 @@ function plugin:addHook (eventName, func, options)
 
 	table.insert(self.polyHooks[eventName], {
 		func = func,
-		priority = options.priority or 0
+		priority = options.priority or 0,
 	})
 end
 
 ---Add a callback for when the plugin is enabled.
 ---@param func fun(isReload: boolean) The function to be called when the plugin is enabled.
-function plugin:addEnableHandler (func)
+function plugin:addEnableHandler(func)
 	table.insert(self.polyEnableHandlers, func)
 end
 
-function plugin:callEnableHandlers (isReload)
+function plugin:callEnableHandlers(isReload)
 	for _, func in ipairs(self.polyEnableHandlers) do
 		func(isReload)
 	end
@@ -200,18 +200,18 @@ end
 
 ---Add a callback for when the plugin is disabled.
 ---@param func fun(isReload: boolean) The function to be called when the plugin is disabled.
-function plugin:addDisableHandler (func)
+function plugin:addDisableHandler(func)
 	table.insert(self.polyDisableHandlers, func)
 end
 
-function plugin:callDisableHandlers (isReload)
+function plugin:callDisableHandlers(isReload)
 	self:onDisable(isReload)
 	for _, func in ipairs(self.polyDisableHandlers) do
 		func(isReload)
 	end
 end
 
-function plugin:setConfig ()
+function plugin:setConfig()
 	self.config = {}
 
 	-- Load default config
@@ -228,7 +228,7 @@ function plugin:setConfig ()
 	end
 end
 
-function plugin:load (isEnabled, isReload)
+function plugin:load(isEnabled, isReload)
 	local loadedFile = assert(loadfile(self.entryPath))
 
 	loadedFile(self)
@@ -242,7 +242,7 @@ function plugin:load (isEnabled, isReload)
 	end
 end
 
-function plugin:reload ()
+function plugin:reload()
 	local isEnabled = self.isEnabled
 
 	if isEnabled then
@@ -267,18 +267,18 @@ end
 ---Indicate the plugin has been enabled.
 ---@param isReload boolean
 ---@deprecated
-function plugin.onEnable (isReload) end
+function plugin.onEnable(isReload) end
 
 ---Indicate the plugin has been disabled.
 ---@param isReload boolean
 ---@deprecated
-function plugin.onDisable (isReload) end
+function plugin.onDisable(isReload) end
 
-local function newPlugin (nameSpace, stem)
+local function newPlugin(nameSpace, stem)
 	return setmetatable({
-		name = 'Unknown',
-		author = 'Unknown',
-		description = 'n/a',
+		name = "Unknown",
+		author = "Unknown",
+		description = "n/a",
 		---@deprecated
 		hooks = {},
 		polyHooks = {},
@@ -291,24 +291,23 @@ local function newPlugin (nameSpace, stem)
 		requireCache = {},
 		nameSpace = nameSpace,
 		fileName = stem,
-		doAutoReload = false
+		doAutoReload = false,
 	}, plugin)
 end
 
-local function discoverInNameSpace (nameSpace, isEnabledFunc)
+local function discoverInNameSpace(nameSpace, isEnabledFunc)
 	local numLoaded = 0
 
 	local entries = os.listDirectory(nameSpace)
 	for _, entry in ipairs(entries) do
-		if (entry.isDirectory or entry.extension == '.lua')
-		and not hook.plugins[entry.stem] then
+		if (entry.isDirectory or entry.extension == ".lua") and not hook.plugins[entry.stem] then
 			local plug = newPlugin(nameSpace, entry.stem)
 
 			if entry.isDirectory then
-				plug.entryPath = nameSpace .. '/' .. entry.stem ..'/init.lua'
-				PLUGIN_WATCHER:addWatch(nameSpace .. '/' .. entry.stem, FILE_WATCH_MODIFY)
+				plug.entryPath = nameSpace .. "/" .. entry.stem .. "/init.lua"
+				PLUGIN_WATCHER:addWatch(nameSpace .. "/" .. entry.stem, FILE_WATCH_MODIFY)
 			else
-				plug.entryPath = nameSpace .. '/' .. entry.name
+				plug.entryPath = nameSpace .. "/" .. entry.name
 				plug.fullFileName = entry.name
 			end
 
@@ -316,7 +315,7 @@ local function discoverInNameSpace (nameSpace, isEnabledFunc)
 
 			local isEnabled = isEnabledFunc(plug)
 
-			printScoped(string.format('Loading \27[30;1m%s.\27[0m%s', nameSpace, entry.stem))
+			printScoped(string.format("Loading \27[30;1m%s.\27[0m%s", nameSpace, entry.stem))
 			plug:load(isEnabled, false)
 
 			numLoaded = numLoaded + 1
@@ -326,51 +325,52 @@ local function discoverInNameSpace (nameSpace, isEnabledFunc)
 	return numLoaded
 end
 
-local function loadPluginNameSpace (nameSpace, isEnabledFunc)
-	printScoped('Loading ' .. nameSpace .. '...')
+local function loadPluginNameSpace(nameSpace, isEnabledFunc)
+	printScoped("Loading " .. nameSpace .. "...")
 
 	local numLoaded = discoverInNameSpace(nameSpace, isEnabledFunc)
-	printScoped('Loaded ' .. numLoaded .. ' ' .. nameSpace)
+	printScoped("Loaded " .. numLoaded .. " " .. nameSpace)
 
 	PLUGIN_WATCHER:addWatch(nameSpace, FILE_WATCH_MODIFY)
 end
 
-local function shouldStartPluginEnabled (plug)
+local function shouldStartPluginEnabled(plug)
 	return not disabledPluginsMap[plug.fileName]
 end
 
-local function shouldStartModeEnabled (plug)
+local function shouldStartModeEnabled(plug)
 	return plug.fileName == hook.persistentMode
 end
 
-local function loadPlugins ()
-	if hook.persistentMode == '' then
+local function loadPlugins()
+	if hook.persistentMode == "" then
 		hook.persistentMode = config.defaultGameMode
 	end
 
-	loadPluginNameSpace('plugins', shouldStartPluginEnabled)
-	loadPluginNameSpace('modes', shouldStartModeEnabled)
+	loadPluginNameSpace("plugins", shouldStartPluginEnabled)
+	loadPluginNameSpace("modes", shouldStartModeEnabled)
 
 	hook.resetCache()
 end
 
 ---Discover and load any plugins that weren't present at startup.
 ---@return integer numLoaded
-function discoverNewPlugins ()
-	return discoverInNameSpace('plugins', shouldStartPluginEnabled)
-	+ discoverInNameSpace('modes', shouldStartModeEnabled)
+function discoverNewPlugins()
+	return discoverInNameSpace("plugins", shouldStartPluginEnabled)
+		+ discoverInNameSpace("modes", shouldStartModeEnabled)
 end
 
-local function reloadConfigOfPlugins ()
+local function reloadConfigOfPlugins()
 	for _, plug in pairs(hook.plugins) do
 		plug:setConfig()
 	end
 end
 
 hook.add(
-	'ConfigLoaded', 'main.plugins',
+	"ConfigLoaded",
+	"main.plugins",
 	---@param isReload boolean
-	function (isReload)
+	function(isReload)
 		doPrintsWithoutTime = config.doPrintsWithoutTime
 
 		if not isReload then
@@ -384,39 +384,38 @@ hook.add(
 ---@param descriptor string
 ---@param fullFileName string
 ---@return Plugin?
-local function findModifiedPlugin (descriptor, fullFileName)
+local function findModifiedPlugin(descriptor, fullFileName)
 	for _, plug in pairs(hook.plugins) do
 		if plug.nameSpace == descriptor and plug.fullFileName == fullFileName then
 			return plug
 		end
 
-		if plug.nameSpace .. '/' .. plug.fileName == descriptor then
+		if plug.nameSpace .. "/" .. plug.fileName == descriptor then
 			return plug
 		end
 	end
 	return nil
 end
 
-local function pollEvents ()
+local function pollEvents()
 	while true do
 		local event = PLUGIN_WATCHER:receiveEvent()
-		if not event then return end
+		if not event then
+			return
+		end
 
 		local plug = findModifiedPlugin(event.descriptor, event.name)
 		if plug and plug.doAutoReload then
-			printScoped(('Watched plugin %s has changed! Reloading...'):format(plug.name))
+			printScoped(("Watched plugin %s has changed! Reloading..."):format(plug.name))
 			plug:reload()
 		end
 	end
 end
 
-hook.add(
-	'Logic', 'main.plugins',
-	function ()
-		pollCounter = pollCounter + 1
-		if pollCounter > POLL_EVERY then
-			pollCounter = 0
-			pollEvents()
-		end
+hook.add("Logic", "main.plugins", function()
+	pollCounter = pollCounter + 1
+	if pollCounter > POLL_EVERY then
+		pollCounter = 0
+		pollEvents()
 	end
-)
+end)

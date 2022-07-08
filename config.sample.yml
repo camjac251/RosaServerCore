@@ -5,7 +5,7 @@ plugins:
     updateSeconds: 4
   logs:
     webhookEnabled: true
-    webhookPath: '/api/webhooks/xxxxx/xxxxxxxxxx'
+    webhookPath: "/api/webhooks/xxxxx/xxxxxxxxxx"
 modes:
   myMode:
-    coolLink: 'My awesome link: google.com'
+    coolLink: "My awesome link: google.com"

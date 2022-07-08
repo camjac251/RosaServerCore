@@ -1,11 +1,11 @@
 ---@type Plugin
 local plugin = ...
-plugin.name = 'Short Chat'
-plugin.author = 'jdb'
-plugin.description = 'Rejects very wide chat messages.'
+plugin.name = "Short Chat"
+plugin.author = "jdb"
+plugin.description = "Rejects very wide chat messages."
 
 plugin.defaultConfig = {
-	maxPixelWidth = 2060
+	maxPixelWidth = 2060,
 }
 
 local defaultCharacterWidth = 27
@@ -233,12 +233,12 @@ local characterWidths = {
 	[252] = 30,
 	[253] = 30,
 	[254] = 34,
-	[255] = 30
+	[255] = 30,
 }
 
 ---@param str string
 ---@return integer
-local function getRockwellWidth (str)
+local function getRockwellWidth(str)
 	local width = 0
 
 	for i = 1, #str do
@@ -250,13 +250,13 @@ local function getRockwellWidth (str)
 end
 
 plugin:addHook(
-	'PlayerChat',
+	"PlayerChat",
 	---@param ply Player
 	---@param message string
-	function (ply, message)
+	function(ply, message)
 		local width = getRockwellWidth(message)
 		if width > plugin.config.maxPixelWidth then
-			ply:sendMessage('Message too long')
+			ply:sendMessage("Message too long")
 			return hook.override
 		end
 	end

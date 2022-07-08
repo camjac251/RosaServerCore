@@ -1,12 +1,12 @@
 ---@type Plugin
 local plugin = ...
-plugin.name = 'Where'
-plugin.author = 'jdb'
-plugin.description = 'Locates players relative to streets.'
+plugin.name = "Where"
+plugin.author = "jdb"
+plugin.description = "Locates players relative to streets."
 
 ---@param pos Vector
 ---@return Street?
-local function getStreetUnderPosition (pos)
+local function getStreetUnderPosition(pos)
 	for _, street in ipairs(streets.getAll()) do
 		if isVectorInCuboid(pos, street.trafficCuboidA, street.trafficCuboidB) then
 			return street
@@ -17,7 +17,7 @@ end
 ---@param pos Vector
 ---@return StreetIntersection?
 ---@return number?
-local function getClosestIntersection (pos)
+local function getClosestIntersection(pos)
 	local lowestSquareDistance
 	local closestIntersection
 
@@ -34,25 +34,25 @@ end
 
 ---@param intersection StreetIntersection
 ---@return string
-local function getIntersectionHorizontalName (intersection)
+local function getIntersectionHorizontalName(intersection)
 	local street = intersection.streetEast or intersection.streetWest
-	return street and street.name or 'n/a'
+	return street and street.name or "n/a"
 end
 
 ---@param intersection StreetIntersection
 ---@return string
-local function getIntersectionVerticalName (intersection)
+local function getIntersectionVerticalName(intersection)
 	local street = intersection.streetNorth or intersection.streetSouth
-	return street and street.name or 'n/a'
+	return street and street.name or "n/a"
 end
 
 ---@param intersection StreetIntersection
-local function intersectionToString (intersection)
-	return getIntersectionHorizontalName(intersection) .. ' and ' .. getIntersectionVerticalName(intersection)
+local function intersectionToString(intersection)
+	return getIntersectionHorizontalName(intersection) .. " and " .. getIntersectionVerticalName(intersection)
 end
 
 ---@param street Street
-local function isStreetVertical (street)
+local function isStreetVertical(street)
 	local intersection = street.intersectionA
 	if intersection.streetSouth == street or intersection.streetNorth == street then
 		return true
@@ -61,7 +61,7 @@ local function isStreetVertical (street)
 end
 
 ---@param street Street
-local function handleOnStreet (street)
+local function handleOnStreet(street)
 	local betweenA, betweenB
 	if isStreetVertical(street) then
 		betweenA = getIntersectionHorizontalName(street.intersectionA)
@@ -71,32 +71,27 @@ local function handleOnStreet (street)
 		betweenB = getIntersectionVerticalName(street.intersectionB)
 	end
 
-	return string.format(
-		'on %s between %s and %s',
-		street.name or 'n/a',
-		betweenA,
-		betweenB
-	)
+	return string.format("on %s between %s and %s", street.name or "n/a", betweenA, betweenB)
 end
 
 ---@param intersection StreetIntersection
 ---@param distance number
-local function handleNearIntersection (intersection, distance)
-	return string.format(
-		'%.2fm away from %s',
-		distance,
-		intersectionToString(intersection)
-	)
+local function handleNearIntersection(intersection, distance)
+	return string.format("%.2fm away from %s", distance, intersectionToString(intersection))
 end
 
-plugin.commands['/where'] = {
-	info = 'Locate a player.',
-	usage = '<phoneNumber/name>',
+plugin.commands["/where"] = {
+	info = "Locate a player.",
+	usage = "<phoneNumber/name>",
 	---@param ply Player
-	canCall = function (ply) return ply.isConsole or ply.isAdmin end,
+	canCall = function(ply)
+		return ply.isConsole or ply.isAdmin
+	end,
 	---@param args string[]
-	autoComplete = function (args)
-		if #args < 1 then return end
+	autoComplete = function(args)
+		if #args < 1 then
+			return
+		end
 
 		local result = autoCompletePlayer(args[1])
 		if result then
@@ -105,12 +100,12 @@ plugin.commands['/where'] = {
 	end,
 	---@param ply Player
 	---@param args string[]
-	call = function (ply, _, args)
-		assert(#args >= 1, 'usage')
+	call = function(ply, _, args)
+		assert(#args >= 1, "usage")
 
 		local victim = findOnePlayer(table.remove(args, 1))
 
-		local context = 'not spawned in'
+		local context = "not spawned in"
 
 		local victimMan = victim.human
 		if victimMan then
@@ -119,17 +114,15 @@ plugin.commands['/where'] = {
 				context = handleOnStreet(onStreet)
 			else
 				local closestIntersection, squareDistance = getClosestIntersection(victimMan.pos)
-				assert(closestIntersection, 'There are no street intersections to refer to')
+				assert(closestIntersection, "There are no street intersections to refer to")
 
 				context = handleNearIntersection(closestIntersection, math.sqrt(squareDistance))
 			end
 		end
 
-		messagePlayerWrap(ply, string.format(
-			'%s (%s) is %s',
-			victim.name,
-			dashPhoneNumber(victim.phoneNumber),
-			context
-		))
-	end
+		messagePlayerWrap(
+			ply,
+			string.format("%s (%s) is %s", victim.name, dashPhoneNumber(victim.phoneNumber), context)
+		)
+	end,
 }
