@@ -633,6 +633,34 @@ do
 end
 
 do
+	---Represents a corporation building.
+	---@class Corporation
+	---@field class string 🔒 "Corporation"
+	---@field doorPos Vector The origin point of the corporation door.
+	---@field spawnLocation Vector The origin point of the corporation spawn.
+	---@field missionLocation Vector The origin point of the corporation mission.
+	---@field missionValue integer The value of the corporation mission.
+	---@field missionType integer The type of the corporation mission.
+	---@field missionItemID integer The item ID of the corporation mission.
+	---@field missionTeam1 integer The team of the corporation mission.
+	---@field missionTeam2 integer The team of the corporation mission.
+	---@field carSpawn1 Vector The origin point of the first car spawn.
+	---@field tableLocation Vector The origin point of the corporation table.
+	---@field tableOrientation RotMatrix The rotation of the corporation table.
+	---@field interiorCuboidA Vector The first corner of a cuboid, where the interior of the corporation is contained inside.
+	---@field interiorCuboidB Vector The second corner of a cuboid, where the interior of the corporation is contained inside.
+	---@field vaultCuboidA Vector The first corner of a cuboid, where the vault of the corporation is contained inside.
+	---@field vaultCuboidB Vector The second corner of a cuboid, where the vault of the corporation is contained inside.
+	---@field managerPlayerID integer The player ID of the corporation manager.
+	---@field isDoorOpen integer Whether or not the door is open.
+	---@field players integer How many players are currently inside the corporation.
+	---@field providedCash integer How much cash the corporation has provided.
+	---@field diskTypeID ItemType The type ID of the corporation disk.
+	---@field index integer 🔒 The index of the array in memory this is.
+	local Corporation
+end
+
+do
 	---Represents a special building.
 	---@class Building
 	---@field class string 🔒 "Building"

@@ -543,6 +543,18 @@ function trafficCars.getCount() end
 ---@param amount integer The number of cars to create.
 function trafficCars.createMany(amount) end
 
+---Library for managing corporations.
+---corporations[index: integer] -> Corporation
+corporations = {}
+
+---Get all corporations.
+---@return Building[] buildings A list of all corporations.
+function corporations.getAll() end
+
+---Get the number of corporations.
+---@return integer count How many corporations there are.
+function corporations.getCount() end
+
 ---Library for managing Building objects.
 ---buildings[index: integer] -> Building
 buildings = {}
@@ -617,7 +629,7 @@ memory = {}
 function memory.getBaseAddress() end
 
 ---Get the address of a game object.
----@param object Connection|Account|Player|Human|ItemType|Item|Vehicle|Bullet|Bone|RigidBody|Bond|Action|MenuButton|StreetLane|Street|StreetIntersection
+---@param object Connection|Account|Player|Human|ItemType|Item|Vehicle|Bullet|Bone|RigidBody|Bond|Action|MenuButton|StreetLane|Street|StreetIntersection|Building|Corporation
 ---@return integer address
 function memory.getAddress(object) end
 
