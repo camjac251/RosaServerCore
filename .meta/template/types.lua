@@ -203,6 +203,7 @@ do
 	---@field menuTab integer What tab in the menu they are currently in.
 	---@field numActions integer
 	---@field lastNumActions integer
+	---@field numMenuButtons integer
 	---@field gender integer 💾 0 = female, 1 = male.
 	---@field skinColor integer 💾 Starts at 0.
 	---@field hairColor integer 💾
@@ -439,6 +440,10 @@ do
 	---@field connectedPhone? Item The phone that this phone is connected to.
 	local Item
 
+	---Fire a network event containing basic info.
+	---@return Event event The created event.
+	function Item:update() end
+
 	---Remove self safely and fire a network event.
 	function Item:remove() end
 
@@ -534,6 +539,7 @@ do
 	---@field gasControl number Brakes to full gas, -1 to 1.
 	---@field engineRPM integer The RPM of the engine to be networked, 0 to 8191.
 	---@field numSeats integer The number of accessible seats.
+	---@field numWheels integer The number of wheels.
 	---@field index integer 🔒 The index of the array in memory this is (0-511).
 	---@field isActive boolean Whether or not this exists, only change if you know what you are doing.
 	---@field lastDriver? Player 🔒 The last person to drive the vehicle.
@@ -565,6 +571,24 @@ do
 	---@param index integer The index between 0 and 7.
 	---@param isWindowBroken boolean
 	function Vehicle:setIsWindowBroken(index, isWindowBroken) end
+
+	---Get a wheel on the car.
+	---@param index integer The index between 0 and numSeats-1.
+	---@return Wheel wheel The desired wheel.
+	function Vehicle:getWheel(index) end
+end
+
+do
+	---Represents a wheel on a car, train, or helicopter.
+	---💾 = To network changed value to clients, the `updateType` method needs to be called.
+	---@class Wheel
+	---@field class string 🔒 "Vehicle"
+	---@field visualHeight number The height of the wheel.
+	---@field vehicleHeight number The height of the vehicle.
+	---@field spin number The spin of the Wheel
+	---@field skid number The skid of the Wheel
+	---@field rigidBody RigidBody 🔒 The rigid body representing the physics of this vehicle.
+	local Wheel
 end
 
 do
@@ -610,6 +634,25 @@ do
 	---@param c number
 	---@param d number
 	function RigidBody:collideLevel(localPos, normal, a, b, c, d) end
+end
+
+do
+	---Represents a bond between one or two rigid bodies.
+	---@class Bond
+	---@field class string 🔒 "Bond"
+	---@field type integer
+	---@field despawnTime integer How many ticks until removal, 65536 for never.
+	---@field globalPos Vector
+	---@field localPos Vector
+	---@field otherLocalPos Vector
+	---@field index integer 🔒 The index of the array in memory this is (0-16383).
+	---@field isActive boolean Whether or not this exists, only change if you know what you are doing.
+	---@field body RigidBody The rigid body of this bond.
+	---@field otherBody RigidBody The second rigid body of this bond, if there is one.
+	local Bond
+
+	---Remove self safely and fire a network event.
+	function Bond:remove() end
 end
 
 do
@@ -1055,19 +1098,6 @@ end
 ---@field class string 🔒 "InventorySlot"
 ---@field primaryItem? Item 🔒 The first item in the slot, if any.
 ---@field secondaryItem? Item 🔒 The second item in the slot, if any.
-
----Represents a bond between one or two rigid bodies.
----@class Bond
----@field class string 🔒 "Bond"
----@field type integer
----@field despawnTime integer How many ticks until removal, 65536 for never.
----@field globalPos Vector
----@field localPos Vector
----@field otherLocalPos Vector
----@field index integer 🔒 The index of the array in memory this is (0-16383).
----@field isActive boolean Whether or not this exists, only change if you know what you are doing.
----@field body RigidBody The rigid body of this bond.
----@field otherBody RigidBody The second rigid body of this bond, if there is one.
 
 ---Represents a networked action sent from a player.
 ---@class Action
