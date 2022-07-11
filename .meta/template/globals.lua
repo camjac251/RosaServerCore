@@ -83,7 +83,7 @@ FILE_WATCH_UNMOUNT = 0
 ---The hook library which hooked events will call upon.
 ---The hook.run function must be defined to use hooks.
 hook = {
-	persistentMode = ''
+	persistentMode = "",
 }
 
 ---Enable a hook for use in Lua.
@@ -129,11 +129,7 @@ function Vector(x, y, z) end
 ---@param y3 number
 ---@param z3 number
 ---@return RotMatrix rotMatrix The created rotation matrix.
-function RotMatrix(
-	x1, y1, z1,
-	x2, y2, z2,
-	x3, y3, z3
-) end
+function RotMatrix(x1, y1, z1, x2, y2, z2, x3, y3, z3) end
 
 ---Library for sending HTTP(S) requests.
 http = {}
@@ -283,6 +279,12 @@ function physics.garbageCollectBullets() end
 ---@param blockZ integer
 ---@param flags integer
 function physics.createBlock(blockX, blockY, blockZ, flags) end
+
+---Get the the collidable block in the level.
+---@param blockX integer
+---@param blockY integer
+---@param blockZ integer
+function physics.getBlock(blockX, blockY, blockZ) end
 
 ---Delete a collidable block in the level.
 ---@param blockX integer
@@ -448,6 +450,14 @@ vehicles = {}
 ---@return Vehicle[] vehicles A list of all Vehicle objects.
 function vehicles.getAll() end
 
+---Get all vehicles that are not bots.
+---@return Vehicle[] vehicles A list of all Vehicle objects that are not bots.
+function vehicles.getNonTrafficCars() end
+
+---Get all vehicles that are bots.
+---@return Vehicle[] vehicles A list of all Vehicle objects that are bots.
+function vehicles.getTrafficCars() end
+
 ---Get the number of vehicles.
 ---@return integer count How many Vehicle objects there are.
 function vehicles.getCount() end
@@ -548,7 +558,7 @@ function trafficCars.createMany(amount) end
 corporations = {}
 
 ---Get all corporations.
----@return Building[] buildings A list of all corporations.
+---@return Corporation[] corporations A list of all corporations.
 function corporations.getAll() end
 
 ---Get the number of corporations.
@@ -688,6 +698,41 @@ function memory.readDouble(address) end
 ---@param count integer The number of bytes to read.
 ---@return string bytes
 function memory.readBytes(address, count) end
+
+---Read a signed 1-byte integer as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexByte(address) end
+
+---Read a signed 2-byte integer as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexShort(address) end
+
+---Read a signed 4-byte integer as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexInt(address) end
+
+---Read a signed 8-byte integer as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexLong(address) end
+
+---Read a single-precision floating point number as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexFloat(address) end
+
+---Read a double-precision floating point number as a hexidecimal string from memory.
+---@param address integer
+---@return string value
+function memory.toHexDouble(address) end
+
+---Read a double-precision floating point number as a hexidecimal string from memory.
+---@param address string
+---@return string value
+function memory.toHexString(address) end
 
 ---Write a signed 1-byte integer to memory.
 ---@param address integer

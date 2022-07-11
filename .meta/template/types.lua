@@ -3,34 +3,35 @@ do
 	---@class Server
 	---@field class string 🔒 "Server"
 	---@field TPS integer 🔒 How many ticks are in 1 second according to in-game timers (60).
-	---@field port integer 🔒
+	---@field port integer 🔒 The port the server is running on.
 	---@field name string Name shown on the server list, max length of 31.
 	---@field adminPassword string The admin password used in the /admin command.
 	---@field password string Empty string for no password, otherwise people will need to type this to join.
-	---@field maxPlayers integer
-	---@field maxBytesPerSecond integer
+	---@field maxPlayers integer The maximum number of players allowed on the server.
+	---@field maxBytesPerSecond integer The maximum bytes per second allowed on the server.
 	---@field worldTraffic integer How many traffic cars there should be in world mode.
-	---@field worldStartCash integer
+	---@field worldStartCash integer How much cash the player starts with in world mode.
 	---@field worldMinCash integer
-	---@field worldShowJoinExit boolean
-	---@field worldRespawnTeam boolean
-	---@field worldCrimeCivCiv integer
-	---@field worldCrimeCivTeam integer
-	---@field worldCrimeTeamCiv integer
-	---@field worldCrimeTeamTeam integer
-	---@field worldCrimeTeamTeamInBase integer
-	---@field worldCrimeNoSpawn integer
+	---@field worldShowJoinExit boolean Whether to show join/exit messages in world mode.
+	---@field worldRespawnTeam boolean Whether to allow players to respawn at their team building in world mode.
+	---@field worldCrimeCivCiv integer Crime rating given for civ-civ interactions in world mode.
+	---@field worldCrimeCivTeam integer Crime rating given for civ-team interactions in world mode.
+	---@field worldCrimeTeamCiv integer Crime rating given for team-civ interactions in world mode.
+	---@field worldCrimeTeamTeam integer Crime rating given for team-team interactions in world mode.
+	---@field worldCrimeTeamTeamInBase integer Crime rating given for same team interactions in world mode.
+	---@field worldCrimeNoSpawn integer Crime rating threshold until players cannot spawn in world mode.
 	---@field roundRoundTime integer How long rounds are in round mode, in minutes.
-	---@field roundStartCash integer
-	---@field roundIsWeekly boolean
-	---@field roundHasBonusRatio boolean
-	---@field roundTeamDamage integer
+	---@field roundStartCash integer How much cash players start with in round mode.
+	---@field roundIsWeekly boolean Whether the round mode is weekly.
+	---@field roundHasBonusRatio boolean Whether the bonus ratio is enabled in round mode.
+	---@field roundTeamDamage integer How much damage is done to the other team when a team is damaged.
 	---@field type integer Gamemode number.
 	---@field loadedLevel string 🔒 Name of the currently loaded map.
-	---@field levelToLoad string
-	---@field isLevelLoaded boolean
-	---@field gravity number
-	---@field defaultGravity number 🔒
+	---@field levelToLoad string Name of the map to load next round.
+	---@field isLevelLoaded boolean 🔒 Whether the level is loaded.
+	---@field isSocketEnabled boolean 🔒 Whether the server is listening for connections.
+	---@field gravity number The gravity of the world.
+	---@field defaultGravity number 🔒 The default gravity of the world.
 	---@field state integer Game state enum. Always networked.
 	---@field time integer Time remaining in ticks (see TPS). Always networked.
 	---@field sunTime integer Time of day in ticks, where noon is 2592000 (12*60*60*TPS). Always networked.
@@ -204,6 +205,7 @@ do
 	---@field numActions integer
 	---@field lastNumActions integer
 	---@field numMenuButtons integer
+	---@field itemsBought integer
 	---@field gender integer 💾 0 = female, 1 = male.
 	---@field skinColor integer 💾 Starts at 0.
 	---@field hairColor integer 💾
@@ -221,6 +223,7 @@ do
 	---@field isReady boolean
 	---@field isBot boolean 💾
 	---@field isZombie boolean 💾 Whether the bot player should always run towards it's target.
+	---@field isGodmode boolean Whether the player is in godmode.
 	---@field human? Human 💾 The human they currently control.
 	---@field connection? Connection 🔒 Their network connection.
 	---@field account? Account Their account.
@@ -263,6 +266,7 @@ do
 	---@field maxStamina integer
 	---@field vehicleSeat integer Seat index of the vehicle they are in.
 	---@field despawnTime integer Ticks remaining until removal if dead.
+	---@field spawnProtection integer Ticks remaining left in protection from damage.
 	---@field movementState integer 0 = normal, 1 = in midair, 2 = sliding, rest unknown.
 	---@field zoomLevel integer 0 = run, 1 = walk, 2 = aim.
 	---@field damage integer Level of screen blackness, 0-60.
@@ -470,6 +474,12 @@ do
 	---Does not alter or remove the item.
 	function Item:explode() end
 
+	---Trigger a sound on the item.
+	---@param soundType integer The type of the sound.
+	---@param volume number The volume of the sound, where 1.0 is standard.
+	---@param pitch number The pitch of the sound, where 1.0 is standard.
+	function Item:sound(soundType, volume, pitch) end
+
 	---Set the text displayed on this item.
 	---Visible if it is a Memo or a Newspaper item.
 	---@param memo string The memo to set. Max 1023 characters.
@@ -528,6 +538,7 @@ do
 	---@field class string 🔒 "Vehicle"
 	---@field data table A Lua table which persists throughout the lifespan of this object.
 	---@field type VehicleType 💾
+	---@field despawnTime integer Ticks remaining until removal.
 	---@field isLocked boolean Whether or not this has a key and is locked.
 	---@field controllableState integer 0 = cannot be controlled, 1 = car, 2 = helicopter.
 	---@field health integer 0-100
@@ -591,6 +602,11 @@ do
 	---@field skid number The skid of the Wheel
 	---@field rigidBody RigidBody 🔒 The rigid body representing the physics of this vehicle.
 	local Wheel
+
+	---Get a specific rigid body.
+	---@param index integer
+	---@return RigidBody rigidBody The desired rigid body.
+	function Wheel:getRigidBody(index) end
 end
 
 do
@@ -700,7 +716,7 @@ do
 	---@field isDoorOpen integer Whether or not the door is open.
 	---@field players integer How many players are currently inside the corporation.
 	---@field providedCash integer How much cash the corporation has provided.
-	---@field diskTypeID ItemType The type ID of the corporation disk.
+	---@field diskTypeID integer The type ID of the corporation disk.
 	---@field index integer 🔒 The index of the array in memory this is.
 	local Corporation
 end
