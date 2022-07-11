@@ -27,11 +27,11 @@ do
 	---@field roundTeamDamage integer How much damage is done to the other team when a team is damaged.
 	---@field type integer Gamemode number.
 	---@field loadedLevel string 🔒 Name of the currently loaded map.
-	---@field levelToLoad string Name of the map to load next round.
+	---@field levelToLoad string Name of the map to load on next reset.
 	---@field isLevelLoaded boolean 🔒 Whether the level is loaded.
-	---@field isSocketEnabled boolean 🔒 Whether the server is listening for connections.
-	---@field gravity number The gravity of the world.
-	---@field defaultGravity number 🔒 The default gravity of the world.
+	---@field isSocketEnabled boolean 🔒 Whether the server was able to open itself for connections.
+	---@field gravity number The gravity value of the physics engine.
+	---@field defaultGravity number 🔒 The default gravity value of the physics engine.
 	---@field state integer Game state enum. Always networked.
 	---@field time integer Time remaining in ticks (see TPS). Always networked.
 	---@field sunTime integer Time of day in ticks, where noon is 2592000 (12*60*60*TPS). Always networked.
@@ -446,7 +446,7 @@ do
 	---@field connectedPhone? Item The phone that this phone is connected to.
 	local Item
 
-	---Fire a network event containing basic info.
+	---Fire a network event containing basic info (ex. phoneTexture, displayPhoneNumber, phoneStatus)
 	---@return Event event The created event.
 	function Item:update() end
 
@@ -538,7 +538,7 @@ do
 	---@field class string 🔒 "Vehicle"
 	---@field data table A Lua table which persists throughout the lifespan of this object.
 	---@field type VehicleType 💾
-	---@field despawnTime integer Ticks remaining until removal.
+	---@field despawnTime integer Ticks remaining until removal. -1 for never.
 	---@field isLocked boolean Whether or not this has a key and is locked.
 	---@field controllableState integer 0 = cannot be controlled, 1 = car, 2 = helicopter.
 	---@field health integer 0-100
@@ -592,21 +592,15 @@ do
 end
 
 do
-	---Represents a wheel on a car, train, or helicopter.
-	---💾 = To network changed value to clients, the `updateType` method needs to be called.
+	---Represents a wheel on a vehicle.
 	---@class Wheel
-	---@field class string 🔒 "Vehicle"
+	---@field class string 🔒 "Wheel"
 	---@field visualHeight number The height of the wheel.
 	---@field vehicleHeight number The height of the vehicle.
 	---@field spin number The spin of the Wheel
 	---@field skid number The skid of the Wheel
 	---@field rigidBody RigidBody 🔒 The rigid body representing the physics of this vehicle.
 	local Wheel
-
-	---Get a specific rigid body.
-	---@param index integer
-	---@return RigidBody rigidBody The desired rigid body.
-	function Wheel:getRigidBody(index) end
 end
 
 do
