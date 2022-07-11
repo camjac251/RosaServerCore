@@ -704,37 +704,37 @@ function memory.readDouble(address) end
 ---@return string bytes
 function memory.readBytes(address, count) end
 
----Read a signed 1-byte integer as a hexidecimal string from memory.
+---Return the hex representation of a byte.
 ---@param address integer
 ---@return string value
 function memory.toHexByte(address) end
 
----Read a signed 2-byte integer as a hexidecimal string from memory.
+---Return the hex representation of a short.
 ---@param address integer
 ---@return string value
 function memory.toHexShort(address) end
 
----Read a signed 4-byte integer as a hexidecimal string from memory.
+---Return the hex representation of an integer.
 ---@param address integer
 ---@return string value
 function memory.toHexInt(address) end
 
----Read a signed 8-byte integer as a hexidecimal string from memory.
+---Return the hex representation of a long.
 ---@param address integer
 ---@return string value
 function memory.toHexLong(address) end
 
----Read a single-precision floating point number as a hexidecimal string from memory.
+---Return the hex representation of a float.
 ---@param address integer
 ---@return string value
 function memory.toHexFloat(address) end
 
----Read a double-precision floating point number as a hexidecimal string from memory.
+---Return the hex representation of a double.
 ---@param address integer
 ---@return string value
 function memory.toHexDouble(address) end
 
----Read a double-precision floating point number as a hexidecimal string from memory.
+---Return the hex representation of a string.
 ---@param address string
 ---@return string value
 function memory.toHexString(address) end
