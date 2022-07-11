@@ -288,6 +288,7 @@ function physics.createBlock(blockX, blockY, blockZ, flags) end
 ---@param blockX integer
 ---@param blockY integer
 ---@param blockZ integer
+---@return integer? flags The flags of the block, or nil if it does not exist.
 function physics.getBlock(blockX, blockY, blockZ) end
 
 ---Delete a collidable block in the level.
