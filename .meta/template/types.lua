@@ -223,7 +223,7 @@ do
 	---@field isReady boolean
 	---@field isBot boolean 💾
 	---@field isZombie boolean 💾 Whether the bot player should always run towards it's target.
-	---@field isGodmode boolean Whether the player is in godmode.
+	---@field isGodMode boolean Whether the player is in godmode.
 	---@field human? Human 💾 The human they currently control.
 	---@field connection? Connection 🔒 Their network connection.
 	---@field account? Account Their account.
