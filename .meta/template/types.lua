@@ -586,7 +586,7 @@ do
 	function Vehicle:setIsWindowBroken(index, isWindowBroken) end
 
 	---Get a wheel on the car.
-	---@param index integer The index between 0 and numSeats-1.
+	---@param index integer Indices are usually 4, 6 for the limo, truck and trailer.
 	---@return Wheel wheel The desired wheel.
 	function Vehicle:getWheel(index) end
 end
