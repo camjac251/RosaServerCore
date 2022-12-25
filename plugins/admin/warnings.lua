@@ -1,21 +1,21 @@
 ---@type Plugin
 local plugin = ...
 
-local shared = plugin:require('shared')
-local persistence = plugin:require('persistence')
+local shared = plugin:require("shared")
+local persistence = plugin:require("persistence")
 
 local DISPLAY_FREQUENCY_SECONDS = 15
 local STAGGER_DIVISIONS = 30
 local DIVIDER_LENGTH = 48
 
-local function displayWarning (ply, warning)
-	local line = ('-'):rep(DIVIDER_LENGTH)
-	local dateString = os.date('%B %d at %I:%M %p %Z', warning.time)
+local function displayWarning(ply, warning)
+	local line = ("-"):rep(DIVIDER_LENGTH)
+	local dateString = os.date("%B %d at %I:%M %p %Z", warning.time)
 
 	ply:sendMessage(line)
-	messagePlayerWrap(ply, 'You have a warning from ' .. dateString .. ':')
+	messagePlayerWrap(ply, "You have a warning from " .. dateString .. ":")
 	messagePlayerWrap(ply, warning.reason)
-	ply:sendMessage('Type /warned to acknowledge.')
+	ply:sendMessage("Type /warned to acknowledge.")
 	ply:sendMessage(line)
 end
 
@@ -25,7 +25,7 @@ local displayRoutine = staggerRoutine(
 	---@param ply Player
 	---@param persistentData table
 	---@param now number
-	function (ply, persistentData, now)
+	function(ply, persistentData, now)
 		local phoneString = tostring(ply.phoneNumber)
 		local warnings = persistentData.warnings[phoneString]
 
@@ -34,8 +34,10 @@ local displayRoutine = staggerRoutine(
 
 			if warning then
 				local data = ply.data
-				if data.adminLastWarningDisplayTime
-				and now - data.adminLastWarningDisplayTime < DISPLAY_FREQUENCY_SECONDS then
+				if
+					data.adminLastWarningDisplayTime
+					and now - data.adminLastWarningDisplayTime < DISPLAY_FREQUENCY_SECONDS
+				then
 					return
 				end
 
@@ -46,29 +48,28 @@ local displayRoutine = staggerRoutine(
 	end
 )
 
-plugin:addHook(
-	'Logic',
-	function ()
-		local persistentData = persistence.get()
-		local now = os.realClock()
-		displayRoutine(persistentData, now)
-	end
-)
+plugin:addHook("Logic", function()
+	local persistentData = persistence.get()
+	local now = os.realClock()
+	displayRoutine(persistentData, now)
+end)
 
-plugin.commands['/warn'] = {
-	info = 'Warn a player.',
-	usage = '<phoneNumber/name> <reason>',
-	canCall = function (ply) return ply.isConsole or isModeratorOrAdmin(ply) end,
+plugin.commands["/warn"] = {
+	info = "Warn a player.",
+	usage = "<phoneNumber/name> <reason>",
+	canCall = function(ply)
+		return ply.isConsole or isModeratorOrAdmin(ply)
+	end,
 	autoComplete = shared.autoCompleteAccountFirstArg,
 	---@param ply Player
 	---@param args string[]
-	call = function (ply, _, args)
-		assert(#args >= 2, 'usage')
+	call = function(ply, _, args)
+		assert(#args >= 2, "usage")
 
 		local acc = findOneAccount(table.remove(args, 1))
 
 		local phoneString = tostring(acc.phoneNumber)
-		local reason = table.concat(args, ' ')
+		local reason = table.concat(args, " ")
 
 		local persistentData = persistence.get()
 
@@ -78,31 +79,38 @@ plugin.commands['/warn'] = {
 
 		table.insert(persistentData.warnings[phoneString], {
 			reason = reason,
-			time = os.time()
+			time = os.time(),
 		})
 		persistence.save()
 
-		adminLog('%s warned %s (%s), reason: %s', ply.name, acc.name, dashPhoneNumber(acc.phoneNumber), reason)
+		adminLog("%s warned %s (%s), reason: %s", ply.name, acc.name, dashPhoneNumber(acc.phoneNumber), reason)
 
 		shared.discordEmbed({
-			title = 'Player Warned',
+			title = "Player Warned",
 			color = 0xFBC02D,
-			description = string.format('**%s** warned **%s** (%s)', ply.name, acc.name, dashPhoneNumber(acc.phoneNumber)),
+			description = string.format(
+				"**%s** warned **%s** (%s)",
+				ply.name,
+				acc.name,
+				dashPhoneNumber(acc.phoneNumber)
+			),
 			fields = {
 				{
-					name = 'Reason',
-					value = reason
-				}
-			}
+					name = "Reason",
+					value = reason,
+				},
+			},
 		})
-	end
+	end,
 }
 
-plugin.commands['/warned'] = {
-	info = 'Acknowledge a warning.',
-	canCall = function (ply) return not ply.isConsole end,
+plugin.commands["/warned"] = {
+	info = "Acknowledge a warning.",
+	canCall = function(ply)
+		return not ply.isConsole
+	end,
 	---@param ply Player
-	call = function (ply)
+	call = function(ply)
 		local phoneString = tostring(ply.phoneNumber)
 
 		local persistentData = persistence.get()
@@ -119,7 +127,7 @@ plugin.commands['/warned'] = {
 
 		persistence.save()
 
-		messagePlayerWrap(ply, 'Warning acknowledged: ' .. warning.reason)
-		adminLog('%s (%s) acknowledged their warning: %s', ply.name, dashPhoneNumber(ply.phoneNumber), warning.reason)
-	end
+		messagePlayerWrap(ply, "Warning acknowledged: " .. warning.reason)
+		adminLog("%s (%s) acknowledged their warning: %s", ply.name, dashPhoneNumber(ply.phoneNumber), warning.reason)
+	end,
 }
